@@ -1,20 +1,17 @@
-import sys
-import os
-import ml_toolkit as mltk
+import srcs.ml_toolkit as ml
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 
 
 def main():
     # Get the dataset from the directory
     filename = 'datasets/dataset_train.csv'
-    mltk.check_file(filename)
+    ml.check_file(filename)
 
     # Read the data from the file and extract the columns that contains only numeric values and no missing values
     data = pd.read_csv(filename)
-    data = mltk.drop_missing_rows(data)
-    data = mltk.drop_column_by_name(data, 'Index')
+    data = ml.drop_missing_rows(data)
+    data = ml.drop_columns_by_name(data, 'Index')
 
     # calculate std_var for each course in each house
     deviation = {}
@@ -23,8 +20,8 @@ def main():
             data[col] = pd.to_numeric(data[col])
         except ValueError:
             continue
-        data[col] = mltk.normalize_column(data[col])
-        std_var = mltk.std_var(data[col])
+        data[col] = ml.normalize_column(data[col])
+        std_var = ml.std_var(data[col])
         deviation[col] = std_var
         print(f'Standard deviation of {col} is {std_var}')
     print(f'Course with the minimum standard deviation is {min(deviation, key=deviation.get)}')

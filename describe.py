@@ -1,11 +1,9 @@
 import sys
-import ml_toolkit as ml
-import pandas as pd
-import classDescribe as cd
+import srcs.ml_toolkit as ml
+import srcs.Describe as cd
 
 
 def main():
-    # Get the file name from the command line
     try:
         assert len(sys.argv) == 2, 'Usage: python describe.py <filename.csv>'
         filename = sys.argv[1]

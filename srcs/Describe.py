@@ -1,5 +1,5 @@
 import sys
-import ml_toolkit as ml
+import srcs.ml_toolkit as ml
 import pandas as pd
 import numpy as np
 
@@ -15,7 +15,7 @@ class Describe:
         self.df = pd.read_csv(self.filename)
         if columns_to_drop is not None:
             for col in columns_to_drop:
-                self.df = ml.drop_column_by_name(self.df, col)
+                self.df = ml.drop_columns_by_name(self.df, col)
         self.df = ml.drop_non_numeric_columns(self.df)
 
         self.computations = pd.DataFrame(

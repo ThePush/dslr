@@ -25,11 +25,13 @@ def drop_non_numeric_columns(data: pd.DataFrame) -> pd.DataFrame:
     return clean_data[numeric_columns]
 
 
-def drop_column_by_name(data: pd.DataFrame, column_name: str) -> pd.DataFrame:
-    """Removes a column from a DataFrame by its name"""
+def drop_columns_by_name(data: pd.DataFrame, column_names: list) -> pd.DataFrame:
+    """Removes columns from a DataFrame by their names"""
     clean_data = data.copy()
-    columns = [col for col in clean_data.columns if col != column_name]
-    clean_data = clean_data[columns]
+    for column_name in column_names:
+        if column_name in clean_data.columns:
+            clean_data.drop(column_name, axis=1, inplace=True)
+
     return clean_data
 
 
@@ -53,8 +55,9 @@ def normalize_df(data: pd.DataFrame) -> pd.DataFrame:
     """Normalizes the values of a DataFrame between 0 and 1"""
     normalized_data = data.copy()
     for col in normalized_data.columns:
-        normalized_data[col] = (normalized_data[col] - normalized_data[col].min()) / (
-            normalized_data[col].max() - normalized_data[col].min())
+        if is_numeric(normalized_data[col][0]):
+            normalized_data[col] = (normalized_data[col] - normalized_data[col].min()) / (
+                normalized_data[col].max() - normalized_data[col].min())
     return normalized_data
 
 
@@ -165,3 +168,53 @@ def coefficient_of_variation(column) -> float:
     if len(column) < 2:
         return None
     return (std_var(column) / mean(column)) * 100
+
+
+def train_test_split(data: pd.DataFrame, target_column: str, train_size: float = 0.8) -> tuple:
+    """Splits a dataset into a training set and a test set, specifying the y_hat column.
+    return: (X_train, X_test, y_train, y_test)"""
+    assert train_size > 0 and train_size < 1, sys.exit(
+        'Train size must be between 0 and 1')
+
+    data = data.copy()
+    data = data.sample(frac=1).reset_index(drop=True)
+
+    train_size = int(len(data) * train_size)
+
+    X_train = data.iloc[:train_size, :].copy()
+    X_train = drop_columns_by_name(X_train, [target_column]).copy()
+    y_train = data.loc[:train_size-1, target_column].copy()
+    X_test = data.iloc[train_size:, :].copy()
+    X_test = drop_columns_by_name(X_test, [target_column]).copy()
+    y_test = data.loc[train_size:, target_column].copy()
+
+    return X_train, y_train, X_test, y_test
+
+
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+
+def add_intercept_df(X: pd.DataFrame) -> pd.DataFrame:
+    """Adds a column of 1s to the left of a DataFrame"""
+    X = X.copy()
+    X.insert(0, 'intercept', 1)
+    return X
+
+
+def label_encode_column(column: pd.Series) -> pd.Series:
+    '''Encodes a column of strings into integers'''
+    column = column.copy()
+    labels = column.dropna().unique()
+    labels = {label: i for i, label in enumerate(labels)}
+    column = column.map(labels)
+    return column
+
+
+# convert date (eg: 2000-03-30) to number of days since 1/1/1970
+def normalize_dates(column: pd.Series) -> pd.Series:
+    column = column.copy()
+    column = pd.to_datetime(column)
+    column = column.map(lambda date: (date - pd.Timestamp('1970-01-01')) /
+                        pd.Timedelta('1D'))
+    return column
