@@ -1,3 +1,5 @@
 *.pdf
 *pycache*
 *.pyc
+thetas.csv
+houses.csv

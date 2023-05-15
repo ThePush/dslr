@@ -1,45 +1,55 @@
 import srcs.ml_toolkit as ml
 import pandas as pd
+import sys
 import matplotlib.pyplot as plt
 
 
 def main():
     # Get the dataset from the directory
     filename = 'datasets/dataset_train.csv'
-    ml.check_file(filename)
+    try:
+        ml.check_file(filename)
+    except AssertionError as e:
+        print(e)
+        sys.exit(1)
 
     # Read the data from the file and extract the columns that contains only numeric values and no missing values
-    data = pd.read_csv(filename)
-    data = ml.drop_missing_rows(data)
-    data = ml.drop_columns_by_name(data, 'Index')
+    df = pd.read_csv(filename)
+    df = ml.drop_columns_by_name(df, ['Index'])
 
     # calculate std_var for each course in each house
     deviation = {}
-    for col in data.columns:
+    for col in df.columns:
         try:
-            data[col] = pd.to_numeric(data[col])
+            df[col] = pd.to_numeric(df[col])
         except ValueError:
             continue
-        data[col] = ml.normalize_column(data[col])
-        std_var = ml.std_var(data[col])
+        df[col] = ml.normalize_column(df[col])
+        std_var = ml.std_var(df[col])
         deviation[col] = std_var
         print(f'Standard deviation of {col} is {std_var}')
-    print(f'Course with the minimum standard deviation is {min(deviation, key=deviation.get)}')
+    print(
+        f'Course with the lowest standard deviation is {min(deviation, key=deviation.get)}')
 
-    for col in data.columns:
+    for col in df.columns:
         try:
-            data[col] = pd.to_numeric(data[col])
+            df[col] = pd.to_numeric(df[col])
         except ValueError:
             continue
-        plt.hist(data[data['Hogwarts House'] == 'Slytherin'][col], alpha=0.5, label='Slytherin', color='green')
-        plt.hist(data[data['Hogwarts House'] == 'Gryffindor'][col], alpha=0.5, label='Gryffindor', color='red')
-        plt.hist(data[data['Hogwarts House'] == 'Ravenclaw'][col], alpha=0.5, label='Ravenclaw', color='blue')
-        plt.hist(data[data['Hogwarts House'] == 'Hufflepuff'][col], alpha=0.5, label='Hufflepuff', color='yellow')
+        plt.hist(df[df['Hogwarts House'] == 'Slytherin']
+                 [col], alpha=0.5, label='Slytherin', color='green')
+        plt.hist(df[df['Hogwarts House'] == 'Gryffindor']
+                 [col], alpha=0.5, label='Gryffindor', color='red')
+        plt.hist(df[df['Hogwarts House'] == 'Ravenclaw']
+                 [col], alpha=0.5, label='Ravenclaw', color='blue')
+        plt.hist(df[df['Hogwarts House'] == 'Hufflepuff']
+                 [col], alpha=0.5, label='Hufflepuff', color='yellow')
         plt.xlabel(col)
         plt.ylabel('Frequency')
         plt.legend(loc='upper right')
         plt.title(f'Histogram of {col}')
         plt.show()
+
 
 if __name__ == '__main__':
     main()

@@ -191,6 +191,14 @@ def train_test_split(data: pd.DataFrame, target_column: str, train_size: float =
     return X_train, y_train, X_test, y_test
 
 
+def split_features_target(data: pd.DataFrame, target_column: str) -> tuple:
+    """Splits a dataset into features and target, specifying the y_hat column.
+    return: (X, y)"""
+    X = data.copy()
+    y = X.pop(target_column)
+    return X, y
+
+
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
