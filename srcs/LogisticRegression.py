@@ -2,8 +2,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import sys
-import srcs.ml_toolkit as ml
-import tqdm
 from numpy.random import rand
 from sklearn.utils import shuffle
 
@@ -90,10 +88,7 @@ class LogisticRegression:
 
         return theta
 
-    def fit(self, X=None, y=None):
-        if X is not None and y is not None:
-            self.load_train_set(X, y)
-
+    def fit(self):
         self.theta = self.gradient_descent(
             self.X, self.one_hot_y, self.theta, self.alpha, self.max_iter)
 

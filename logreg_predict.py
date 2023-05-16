@@ -34,7 +34,7 @@ def main():
     X_test = df.to_numpy()
 
     # Initialization
-    model = LogisticRegression(alpha=0.05, max_iter=1500, batch_size=1000)
+    model = LogisticRegression()
     model.load_thetas(thetas)
     model.set_classes(list(HOUSES.keys()))
 
