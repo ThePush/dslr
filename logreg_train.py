@@ -35,13 +35,13 @@ def main():
     y_train = y_train.to_numpy()
 
     # Initialization
-    lr = LogisticRegression()
-    lr.load_train_set(X_train, y_train)
+    model = LogisticRegression(batch_size=64)
+    model.load_train_set(X_train, y_train)
 
     # Training and plot
-    lr.fit()
-    lr.save_thetas()
-    lr.plot_cost_history()
+    model.fit()
+    model.save_thetas()
+    model.plot_cost_history()
 
 
 if __name__ == '__main__':

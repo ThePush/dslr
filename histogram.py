@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 
 
 def main():
-    # Get the dataset from the directory
     filename = 'datasets/dataset_train.csv'
     try:
         ml.check_file(filename)

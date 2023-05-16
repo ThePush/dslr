@@ -5,21 +5,26 @@ import sys
 import srcs.ml_toolkit as ml
 import tqdm
 from numpy.random import rand
+from sklearn.utils import shuffle
 
 
 class LogisticRegression:
-    def __init__(self, alpha=0.05, max_iter=1500):
+    def __init__(self, alpha=0.05, max_iter=1500, batch_size=None):
         try:
             assert isinstance(alpha, float), 'alpha must be a float'
             assert isinstance(max_iter, int), 'max_iter must be an int'
+            assert isinstance(
+                batch_size, int) or batch_size is None, 'batch_size must be an int or None'
             assert alpha > 0, 'alpha must be positive'
             assert max_iter > 0, 'max_iter must be positive'
+            assert batch_size is None or batch_size > 0, 'batch_size must be positive'
         except AssertionError as e:
             print(e)
             sys.exit(1)
 
         self.X = []
         self.y = []
+        self.batch_size = batch_size
         self.classes = []
         self.theta = []
         self.one_hot_y = []
@@ -61,16 +66,34 @@ class LogisticRegression:
     def gradient_descent(self, X, y, theta, alpha, epochs) -> np.ndarray:
         m = len(X)
         for i in range(epochs):
+            if self.batch_size is None: # Classic/Batch Gradient Descent
+                X_batch = X
+                y_batch = y
+            elif self.batch_size == 1:  # Stochastic Gradient Descent
+                random_idx = np.random.randint(0, m)
+                X_batch = X[random_idx].reshape(1, -1)
+                y_batch = y[random_idx].reshape(1, -1)
+            else:  # Mini-Batch Gradient Descent
+                X_batch, y_batch = shuffle(X, y, random_state=42)
+                X_batch = X_batch[:self.batch_size]
+                y_batch = y_batch[:self.batch_size]
+
             for j in range(self.classes.shape[0]):
-                h = self.hypothesis(theta[j], X)
-                theta[j] -= alpha * (1 / m) * np.dot((h - y[:, j]), X)
+                h = self.hypothesis(theta[j], X_batch)
+                theta[j] -= alpha * (1 / len(X_batch)) * \
+                    np.dot((h - y_batch[:, j]), X_batch)
+
             self.cost_history.append(self.cost(X, y, theta))
             if i % 100 == 0 or i == self.max_iter - 1:
                 print(
                     f'Epoch: {i}/{self.max_iter}\nCost: {self.cost(X, y, theta)}')
+
         return theta
 
-    def fit(self):
+    def fit(self, X=None, y=None):
+        if X is not None and y is not None:
+            self.load_train_set(X, y)
+
         self.theta = self.gradient_descent(
             self.X, self.one_hot_y, self.theta, self.alpha, self.max_iter)
 

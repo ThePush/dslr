@@ -34,15 +34,15 @@ def main():
     X_test = df.to_numpy()
 
     # Initialization
-    lr = LogisticRegression()
-    lr.load_thetas(thetas)
-    lr.set_classes(list(HOUSES.keys()))
+    model = LogisticRegression(alpha=0.05, max_iter=1500, batch_size=1000)
+    model.load_thetas(thetas)
+    model.set_classes(list(HOUSES.keys()))
 
     # Prediction, stats and plot
-    y_hat = lr.predict(X_test)
-    lr.print_predictions(X_test, y_hat)
-    print(lr.accuracy(X_test, y_hat))
-    lr.plot_cm(X_test, y_hat)
+    y_hat = model.predict(X_test)
+    model.print_predictions(X_test, y_hat)
+    print(model.accuracy(X_test, y_hat))
+    model.plot_cm(X_test, y_hat)
 
     # Save predictions
     y_hat = pd.DataFrame(y_hat, columns=[TARGET])
