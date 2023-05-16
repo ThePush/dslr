@@ -27,7 +27,17 @@ def main():
     args = parser.parse_args()
 
     df = pd.read_csv(filename)
-    df = ml.drop_columns_by_name(df, ['Index'])
+    df = ml.drop_columns_by_name(df, ['Index', 'First Name', 'Last Name',
+                                      'Birthday', 'Best Hand', 'Hogwarts House'])
+
+    try:
+        df[args.c1]
+        df[args.c2]
+    except KeyError as e:
+        print(f'KeyError: {e}\nValid columns are:')
+        for col in df.columns:
+            print(f'    -{col}')
+        sys.exit(1)
 
     colors = {
         'Slytherin': 'green',
