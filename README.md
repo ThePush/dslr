@@ -26,7 +26,7 @@ I added the mean absolute deviation (MAD) and the coefficient of variation (CV) 
 
 This script tries to answer the question "Which Hogwarts course has a homogeneous score distribution between all four houses?".
 <br>
-We basically just look for the course that has the lowest standard deviation between houses:
+We basically just look for the course that has the lowest standard deviation between houses (after having normalized all the grades):
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/91064070/238587039-2a6ade9c-c2cf-4863-b507-c67bc315eab3.png"/>
@@ -43,9 +43,12 @@ The script will also display those distributions, one histogram per course:
 This script tries to answer the question "What are the two features that are similar ?".
 <br>
 We compare the distribution of each feature by pair and see that the two similar features are Astronomy and Defense Against the Dark Arts because of the pattern they follow:
+```shell
+$> python3 scatter_plot.py <course1> <course2>
+```
 
 <p align="center">
-<img src=""/>
+<img src="https://user-images.githubusercontent.com/91064070/238655572-3f0897b1-9c7c-4bee-8f75-d91cf2512963.png"/>
 </p>
 
 ## pair_plot.py:
@@ -64,7 +67,7 @@ This script will display a pair plot, all the histograms plus scatter plots that
 
 <!--![image](https://user-images.githubusercontent.com/91064070/217234438-dbcb4473-bef4-44d6-8efb-eee9a3378c30.png)-->
 
-1/ To generate the model, plot the results and save the model in the <theta.csv> file, use the ```logreg_train.py``` script:
+1/ To generate the model, plot the results and save the model in the ```theta.csv``` file, use the ```logreg_train.py``` script:
 
 ```shell
 $> python3 logreg_train.py <datasets/dataset_train.csv>
