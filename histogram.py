@@ -12,11 +12,9 @@ def main():
         print(e)
         sys.exit(1)
 
-    # Read the data from the file and extract the columns that contains only numeric values and no missing values
     df = pd.read_csv(filename)
     df = ml.drop_columns_by_name(df, ['Index'])
 
-    # calculate std_var for each course in each house
     deviation = {}
     for col in df.columns:
         try:
