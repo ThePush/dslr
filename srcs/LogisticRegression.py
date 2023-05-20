@@ -55,8 +55,8 @@ class LogisticRegression:
             one_hot_y[i][y[i]] = 1
         return one_hot_y
 
-    def hypothesis(self, theta, X) -> np.ndarray:
-        return 1 / (1 + np.exp(-(np.dot(theta, X.T)))) - self.epsilon
+    def hypothesis(self, X, theta) -> np.ndarray:
+        return 1 / (1 + np.exp(-(np.dot(X, theta.T)))) - self.epsilon
 
     def cost(self, X, y, theta) -> float:
         h = self.hypothesis(X, theta)
@@ -78,7 +78,7 @@ class LogisticRegression:
                 y_batch = y_batch[:self.batch_size]
 
             for j in range(self.classes.shape[0]):
-                h = self.hypothesis(theta[j], X_batch)
+                h = self.hypothesis(X_batch, theta[j])
                 theta[j] -= alpha * (1 / len(X_batch)) * \
                     np.dot((h - y_batch[:, j]), X_batch)
 
