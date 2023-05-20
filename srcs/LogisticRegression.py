@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import sys
+import os
 from numpy.random import rand
 from sklearn.utils import shuffle
 
@@ -102,6 +103,8 @@ class LogisticRegression:
         return np.argmax(self.hypothesis(self.theta, X), axis=0)
 
     def save_thetas(self, filename='thetas/thetas.csv'):
+        if not os.path.exists('thetas'):
+            os.makedirs('thetas')
         df = pd.DataFrame(self.theta)
         df.to_csv(filename, index=False)
 
