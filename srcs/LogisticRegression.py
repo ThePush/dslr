@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import sys
 import os
+import srcs.ml_toolkit as ml
 from numpy.random import rand
 from sklearn.utils import shuffle
 
@@ -21,19 +22,27 @@ class LogisticRegression:
             print(e)
             sys.exit(1)
 
-        self.X = []
-        self.y = []
+        self.X = np.array([])
+        self.y = np.array([])
         self.batch_size = batch_size
-        self.classes = []
-        self.theta = []
-        self.one_hot_y = []
-        self.cost_history = []
+        self.classes = np.array([])
+        self.theta = np.array([])
+        self.one_hot_y = np.array([])
         self.alpha = alpha
         self.max_iter = max_iter
-        self.cost_history = []
         self.epsilon = 1e-7
 
     def load_train_set(self, X: np.ndarray, y: np.ndarray):
+        try:
+            assert isinstance(X, np.ndarray), 'X must be a numpy.ndarray'
+            assert isinstance(y, np.ndarray), 'y must be a numpy.ndarray'
+            assert X.shape[0] == y.shape[0], 'X and y must have the same number of rows'
+            assert X.shape[0] > 0, 'X must have at least one row'
+            assert y.shape[0] > 0, 'y must have at least one row'
+        except AssertionError as e:
+            print(e)
+            sys.exit(1)
+
         self.X = self.add_intercept(X)
         self.y = y
         self.classes = np.unique(y)
@@ -41,21 +50,52 @@ class LogisticRegression:
         self.one_hot_y = self.one_hot_encode(y)
         self.cost_history = []
 
-    def set_classes(self, classes: np.ndarray):
+    def set_classes(self, classes: list):
+        try:
+            assert isinstance(classes, list), 'classes must be a list'
+            assert len(classes) > 0, 'classes must have at least one element'
+        except AssertionError as e:
+            print(e)
+            sys.exit(1)
+
         self.classes = np.array(classes)
 
     @staticmethod
     def add_intercept(X) -> np.ndarray:
+        try:
+            assert isinstance(X, np.ndarray), 'X must be a numpy.ndarray'
+            assert X.shape[0] > 0, 'X must have at least one row'
+        except AssertionError as e:
+            print(e)
+            sys.exit(1)
+
         return np.c_[np.ones(X.shape[0]), X]
 
     @staticmethod
     def one_hot_encode(y: np.ndarray) -> np.ndarray:
+        try:
+            assert isinstance(y, np.ndarray), 'y must be a numpy.ndarray'
+            assert y.shape[0] > 0, 'y must have at least one row'
+        except AssertionError as e:
+            print(e)
+            sys.exit(1)
+
         one_hot_y = np.zeros((y.shape[0], np.unique(y).shape[0]))
         for i in range(y.shape[0]):
             one_hot_y[i][y[i]] = 1
         return one_hot_y
 
     def hypothesis(self, X, theta) -> np.ndarray:
+        try:
+            assert isinstance(X, np.ndarray), 'X must be a numpy.ndarray'
+            assert isinstance(
+                theta, np.ndarray), 'theta must be a numpy.ndarray'
+            assert X.shape[0] > 0, 'X must have at least one row'
+            assert theta.shape[0] > 0, 'theta must have at least one row'
+        except AssertionError as e:
+            print(e)
+            sys.exit(1)
+
         return 1 / (1 + np.exp(-(np.dot(X, theta.T)))) - self.epsilon
 
     def cost(self, X, y, theta) -> float:
@@ -65,7 +105,7 @@ class LogisticRegression:
     def gradient_descent(self, X, y, theta, alpha, epochs) -> np.ndarray:
         m = len(X)
         for i in range(epochs):
-            if self.batch_size is None: # Classic/Batch Gradient Descent
+            if self.batch_size is None:  # Classic/Batch Gradient Descent
                 X_batch = X
                 y_batch = y
             elif self.batch_size == 1:  # Stochastic Gradient Descent
@@ -90,25 +130,50 @@ class LogisticRegression:
         return theta
 
     def fit(self):
+        try:
+            assert self.X.shape[0] > 0, 'X must have at least one row'
+            assert self.y.shape[0] > 0, 'y must have at least one row'
+            assert self.classes.shape[0] > 0, 'classes must have at least one row'
+            assert self.theta.shape[0] > 0, 'theta must have at least one row'
+            assert self.one_hot_y.shape[0] > 0, 'one_hot_y must have at least one row'
+        except AssertionError as e:
+            print(e)
+            sys.exit(1)
+
         self.theta = self.gradient_descent(
             self.X, self.one_hot_y, self.theta, self.alpha, self.max_iter)
 
     def predict(self, X) -> np.ndarray:
+        try:
+            assert isinstance(X, np.ndarray), 'X must be a numpy.ndarray'
+            assert X.shape[0] > 0, 'X must have at least one row'
+        except AssertionError as e:
+            print(e)
+            sys.exit(1)
+
         X = self.add_intercept(X)
         try:
             assert X.shape[1] == self.theta.shape[1], 'X must have the same number of features as theta'
         except AssertionError as e:
             print(e)
             sys.exit(1)
+
         return np.argmax(self.hypothesis(self.theta, X), axis=0)
 
     def save_thetas(self, filename='thetas/thetas.csv'):
         if not os.path.exists('thetas'):
             os.makedirs('thetas')
+
         df = pd.DataFrame(self.theta)
         df.to_csv(filename, index=False)
 
     def load_thetas(self, filename):
+        try:
+            ml.check_file(filename)
+        except FileNotFoundError as e:
+            print(e)
+            sys.exit(1)
+
         df = pd.read_csv(filename)
         self.theta = df.to_numpy()
 
@@ -116,6 +181,15 @@ class LogisticRegression:
         return np.mean(self.predict(X) == y)
 
     def print_predictions(self, X, y):
+        try:
+            assert isinstance(X, np.ndarray), 'X must be a numpy.ndarray'
+            assert isinstance(y, np.ndarray), 'y must be a numpy.ndarray'
+            assert X.shape[0] > 0, 'X must have at least one row'
+            assert y.shape[0] > 0, 'y must have at least one row'
+        except AssertionError as e:
+            print(e)
+            sys.exit(1)
+
         y_hat = self.predict(X)
         for i in range(y.shape[0]):
             print(
@@ -135,6 +209,15 @@ class LogisticRegression:
         return cm
 
     def plot_cm(self, X, y):
+        try:
+            assert isinstance(X, np.ndarray), 'X must be a numpy.ndarray'
+            assert isinstance(y, np.ndarray), 'y must be a numpy.ndarray'
+            assert X.shape[0] > 0, 'X must have at least one row'
+            assert y.shape[0] > 0, 'y must have at least one row'
+        except AssertionError as e:
+            print(e)
+            sys.exit(1)
+
         cm = self.confusion_matrix(X, y)
         fig, ax = plt.subplots()
         ax.matshow(cm, cmap=plt.cm.Blues)

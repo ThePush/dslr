@@ -22,14 +22,14 @@ def data_preprocessing(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def main():
-    train = 'datasets/dataset_train.csv'
+    filename = 'datasets/dataset_train.csv'
     try:
-        ml.check_file(train)
+        ml.check_file(filename)
     except AssertionError as e:
         print(e)
         sys.exit(1)
 
-    df = data_preprocessing(pd.read_csv(train))
+    df = data_preprocessing(pd.read_csv(filename))
     X_train, y_train = ml.split_features_target(df, TARGET)
     X_train = X_train.to_numpy()
     y_train = y_train.to_numpy()
