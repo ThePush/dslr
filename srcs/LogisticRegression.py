@@ -163,6 +163,8 @@ class LogisticRegression:
     def save_thetas(self, filename='thetas/thetas.csv'):
         if not os.path.exists('thetas'):
             os.makedirs('thetas')
+        if not filename.endswith('.csv'):
+            filename += '.csv'
 
         df = pd.DataFrame(self.theta)
         df.to_csv(filename, index=False)
