@@ -6,6 +6,8 @@ import os
 import srcs.ml_toolkit as ml
 from numpy.random import rand
 from sklearn.utils import shuffle
+from sklearn.metrics import accuracy_score
+
 
 
 class LogisticRegression:

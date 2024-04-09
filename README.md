@@ -44,12 +44,18 @@ This script tries to answer the question "What are the two features that are sim
 <br>
 We compare the distribution of each feature by pair and see that the two similar features are Astronomy and Defense Against the Dark Arts because of the pattern they follow:
 ```shell
-$> python3 scatter_plot.py <course1> <course2>
+python3 scatter_plot.py <course1> <course2>
 ```
 
 <p align="center">
 <img src="https://user-images.githubusercontent.com/91064070/238655572-3f0897b1-9c7c-4bee-8f75-d91cf2512963.png"/>
 </p>
+
+You can check that by calculating pearson's correlation coefficient for each pair of features:
+
+```shell
+python3 pearson_correlation.py
+```
 
 ## pair_plot.py:
 
@@ -71,7 +77,7 @@ This script will display a pair plot, all the histograms plus scatter plots that
 1/ To generate the model, plot the results and save the model in the ```theta.csv``` file, use the ```logreg_train.py``` script:
 
 ```shell
-$> python3 logreg_train.py <datasets/dataset_train.csv>
+python3 logreg_train.py <datasets/dataset_train.csv>
 ```
 
 Loss function evolution with mini-batch gradient descent (batch size of 64):
@@ -84,9 +90,12 @@ Loss function evolution with mini-batch gradient descent (batch size of 64):
 It will make an inference on the ```datasets/dataset_test.csv```, and save the results in a ```house.csv``` file.
 
 ```shell
-$> python3 logreg_predict.py
+python3 logreg_predict.py
 ```
-Results on the ```dataset_test.csv``` file:
-<p align="center">
-<img src="https://user-images.githubusercontent.com/91064070/238607155-f00cd52d-7f9a-4ebb-b56c-06385aa6d118.png"/>
-</p>
+3/ To evaluate the model, use the ```accuracy_score.py``` script:
+
+```shell
+python3 accuracy_score.py <houses.csv> <datasets/dataset_truth.csv>
+```
+
+```Accuracy Score: 0.99```

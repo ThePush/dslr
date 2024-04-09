@@ -2,6 +2,8 @@ import srcs.ml_toolkit as ml
 import pandas as pd
 import sys
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('TkAgg')
 
 
 def main():

@@ -1,8 +1,10 @@
 import srcs.ml_toolkit as ml
 import pandas as pd
 import sys
+import matplotlib
 import matplotlib.pyplot as plt
 from argparse import ArgumentParser
+matplotlib.use('TkAgg')
 
 
 def main():
@@ -28,7 +30,7 @@ def main():
 
     df = pd.read_csv(filename)
     df = ml.drop_columns_by_name(df, ['Index', 'First Name', 'Last Name',
-                                      'Birthday', 'Best Hand', 'Hogwarts House'])
+                                      'Birthday', 'Best Hand'])
 
     try:
         df[args.c1]
